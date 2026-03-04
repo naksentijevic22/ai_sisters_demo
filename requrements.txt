@@ -1,0 +1,7 @@
+langchain
+langchain-mistralai
+langgraph
+streamlit
+python-dotenv
+requests
+fpdf2

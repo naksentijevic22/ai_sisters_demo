@@ -1,0 +1,4 @@
+.env
+.venv
+devis/
+__pycache__/
