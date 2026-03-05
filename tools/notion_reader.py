@@ -66,18 +66,34 @@ def query_notion(db_key: str, filters: dict | None = None) -> list[dict]:
 def consulter_boulangerie(query_type: str) -> str:
     """
     Consulte la base de données de la boulangerie Chez Madeleine.
-    Utilise ce tool pour répondre aux questions sur les stocks, les produits, les ventes ou les commandes.
 
     query_type doit être l'une des valeurs suivantes :
-    - "stocks" : ingrédients en stock, quantités, seuils d'alerte, fournisseurs et prix
-    - "products" : catalogue des produits, prix de vente, coût de revient, marges, catégories
-    - "sales" : historique des ventes par produit et par jour
+    - "stocks" : tous les ingrédients en stock
+    - "alerts" : uniquement les ingrédients sous le seuil d'alerte (à commander)
+    - "products" : catalogue des produits, prix de vente, marges
+    - "sales" : historique des ventes
     - "orders" : commandes fournisseurs passées
     """
+    if query_type == "alerts":
+        rows = query_notion("stocks")
+        sous_seuil = [
+            r for r in rows
+            if float(r["Quantité en stock"]) < float(r["Seuil alerte"])
+        ]
+        if not sous_seuil:
+            return "Tous les stocks sont au-dessus du seuil d'alerte. Rien à commander."
+        lines = ["=== INGREDIENTS SOUS LE SEUIL D'ALERTE ==="]
+        for r in sous_seuil:
+            lines.append(
+                f"{r['Ingrédient']} : {r['Quantité en stock']} {r['Unité']} "
+                f"(seuil : {r['Seuil alerte']} {r['Unité']}) "
+                f"— Fournisseur : {r['Fournisseur']} ({r['Email fournisseur']})"
+            )
+        return "\n".join(lines)
 
     if query_type not in ("stocks", "products", "sales", "orders"):
-        return f"Type de requête invalide : '{query_type}'. Choisir parmi : stocks, products, sales, orders."
-    
+        return f"Type invalide : '{query_type}'. Choisir parmi : stocks, alerts, products, sales, orders."
+
     rows = query_notion(query_type)
     if not rows:
         return "Aucune donnée trouvée."
@@ -86,5 +102,4 @@ def consulter_boulangerie(query_type: str) -> str:
     for row in rows:
         row_str = " | ".join(f"{k}: {v}" for k, v in row.items() if k != "_page_id")
         lines.append(row_str)
-        
     return "\n".join(lines)

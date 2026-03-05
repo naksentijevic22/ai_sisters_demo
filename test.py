@@ -1,14 +1,5 @@
 from agent.graph import agent
 
-def test(message: str):
-    print(f"\n{'='*60}")
-    print(f"Madeleine : {message}")
-    print('='*60)
-    response = agent.invoke({
-        "messages": [{"role": "user", "content": message}]
-    })
-    print(f"Agent : {response['messages'][-1].content}")
-
 # --- Tool 1 : consulter_boulangerie ---
 
 # # Stocks
@@ -21,7 +12,7 @@ def test(message: str):
 # test("Montre-moi tous mes produits avec leur prix de vente.")
 # test("Quel est mon produit le plus rentable ?")
 
-# # Ventes
+# # VentesQuels sont les ingrédients en dessous du seuil d'alerte ?
 # test("Combien de croissants j'ai vendu la semaine dernière ?")
 # test("Quel est mon meilleur produit en chiffre d'affaires ?")
 # test("Compare mes ventes de baguettes le samedi versus le lundi.")
